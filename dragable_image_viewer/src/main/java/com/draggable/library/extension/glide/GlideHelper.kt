@@ -1,7 +1,6 @@
 package com.draggable.library.extension.glide
 
 import android.Manifest
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -9,15 +8,12 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.media.MediaScannerConnection
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
-import androidx.core.content.ContextCompat
 import android.text.TextUtils
 import android.util.Log
 import android.view.Gravity
-import android.webkit.MimeTypeMap
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.disklrucache.DiskLruCache
 import com.bumptech.glide.load.engine.cache.DiskCache
@@ -34,7 +30,6 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.io.*
 import java.nio.channels.FileChannel
-import java.util.*
 
 object GlideHelper {
 

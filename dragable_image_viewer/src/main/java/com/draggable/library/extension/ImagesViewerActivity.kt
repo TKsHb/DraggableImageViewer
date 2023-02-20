@@ -21,6 +21,7 @@ class ImagesViewerActivity : AppCompatActivity() {
             intent.putExtra(INDEX, index)
             context.startActivity(intent)
             if (context is Activity) {
+                // 关闭过渡动画
                 context.overridePendingTransition(0, 0)
             }
         }
@@ -33,6 +34,7 @@ class ImagesViewerActivity : AppCompatActivity() {
             actionListener = object : DraggableImageGalleryViewer.ActionListener {
                 override fun closeViewer() {
                     finish()
+                    // 关闭过渡动画
                     overridePendingTransition(0, 0)
                 }
             }

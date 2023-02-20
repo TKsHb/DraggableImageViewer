@@ -2,10 +2,12 @@ package com.draggable.library.core
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import androidx.appcompat.app.AppCompatActivity
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,18 +15,21 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
+import com.draggable.library.R
+import com.draggable.library.core.photoview.PhotoView
 import com.draggable.library.extension.Utils
-import com.draggable.library.extension.glide.GlideHelper
 import com.draggable.library.extension.entities.DraggableImageInfo
-import com.drawable.library.R
+import com.draggable.library.extension.glide.GlideHelper
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.view_draggable_simple_image.view.*
 
 /**
  * 单张图片查看器
@@ -47,6 +52,10 @@ class DraggableImageView : FrameLayout {
     private var draggableZoomCore: DraggableZoomCore? = null
     private var needFitCenter = true
     private var viewSelfWhRadio = 1f
+
+    private lateinit var mDraggableImageViewPhotoView: PhotoView
+    private lateinit var mDraggableImageViewViewOriginImage: TextView
+    private lateinit var mDraggableImageViewViewOProgressBar: ProgressBar
 
     private var draggableZoomActionListener = object : DraggableZoomCore.ActionListener {
         override fun currentAlphaValue(alpha: Int) {
@@ -73,8 +82,12 @@ class DraggableImageView : FrameLayout {
     }
 
     private fun initView() {
-        LayoutInflater.from(context).inflate(R.layout.view_draggable_simple_image, this)
+        val root = LayoutInflater.from(context).inflate(R.layout.view_draggable_simple_image, this)
         layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+
+        mDraggableImageViewPhotoView = root.findViewById(R.id.mDraggableImageViewPhotoView)
+        mDraggableImageViewViewOriginImage = root.findViewById(R.id.mDraggableImageViewViewOriginImage)
+        mDraggableImageViewViewOProgressBar = root.findViewById(R.id.mDraggableImageViewViewOProgressBar)
 
         setOnClickListener {
             clickToExit()
@@ -142,7 +155,11 @@ class DraggableImageView : FrameLayout {
             post {
 
                 viewSelfWhRadio = (width * 1f / height)
-                needFitCenter = whRadio > viewSelfWhRadio
+                needFitCenter = if((width * 1f) > height) {
+                    whRadio < viewSelfWhRadio
+                }else{
+                    whRadio > viewSelfWhRadio
+                }
                 if (!paramsInfo.draggableInfo.isValid() || (isGif && !needFitCenter) ) {
                     //退出的时候不要再开启动画
                     paramsInfo.draggableInfo = DraggableParamsInfo()
@@ -175,7 +192,11 @@ class DraggableImageView : FrameLayout {
             draggableImageInfo?.draggableInfo?.scaledViewWhRadio = whRadio
             post {
                 viewSelfWhRadio = (width * 1f / height)
-                needFitCenter = whRadio > viewSelfWhRadio
+                needFitCenter = if((width * 1f) > height) {
+                    whRadio < viewSelfWhRadio
+                }else{
+                    whRadio > viewSelfWhRadio
+                }
 
                 draggableZoomCore = DraggableZoomCore(
                     paramsInfo.draggableInfo,
@@ -264,7 +285,11 @@ class DraggableImageView : FrameLayout {
                     val isGif = resource is GifDrawable
                     mDraggableImageViewViewOProgressBar.visibility = View.GONE
                     val whRadio = resource.intrinsicWidth * 1f / resource.intrinsicHeight
-                    val longImage = whRadio < viewSelfWhRadio
+                    val longImage = if((width * 1f) > height) {
+                        whRadio > viewSelfWhRadio
+                    }else{
+                        whRadio < viewSelfWhRadio
+                    }
 
                     if (isGif) {
                         if (longImage){

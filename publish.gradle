@@ -1,14 +1,52 @@
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'maven-publish'
 
-publish {
-    userOrg = 'susion'
-    repoName = 'arch'
-    groupId = 'com.susion'
-    artifactId = ARTIFACT_ID
-    publishVersion = '1.0.2'
-    desc = 'android image viewer'
-    website = 'https://github.com/SusionSuc/DraggableImageViewer'
+buildscript {
+    ext{
+        GitHubName = null
+        GitHubToken = null
+
+        File localFile = rootProject.file('local.properties')
+        if (localFile.exists()) {
+            Properties properties = new Properties()
+            properties.load(localFile.newDataInputStream())
+            GitHubName = properties.getProperty('maven_user')
+            GitHubToken = properties.getProperty('maven_pwd')
+        }
+    }
 }
 
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/$GitHubName/DraggableImageViewer")
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials {
+                username = GitHubName
+                password = GitHubToken
+                println "GitHubPackages build.gradle\n\tusername=$username\n\ttoken=$password"
+            }
+        }
+    }
+    publications {
+        //This defines a publication called "JohnBase"
+        // that can be published to a Maven repository
+        // by virtue of its type: MavenPublication.
+        tKshb(MavenPublication) {
+//            This publication consists of just
+//            the production JAR artifact and its metadata,
+//            which combined are represented by the
+//            java component of the project.
 
-//./gradlew clean build bintrayUpload -PbintrayUser=susion -PbintrayKey= -PdryRun=false
+//            from components.java
+
+            groupId = 'com.github.tkshb'
+            artifactId = 'base'
+            version = '1.0.1'
+
+            artifact("$buildDir/outputs/aar/dragable_image_viewer-nbShopTerminal-release.aar")
+        }
+    }
+}

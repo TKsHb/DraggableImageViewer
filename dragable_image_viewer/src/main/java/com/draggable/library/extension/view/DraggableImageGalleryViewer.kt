@@ -3,16 +3,16 @@ package com.draggable.library.extension.view
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import androidx.viewpager.widget.PagerAdapter
-import androidx.viewpager.widget.ViewPager
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.Toast
+import android.widget.ImageView
+import android.widget.TextView
+import com.draggable.library.R
 import com.draggable.library.core.DraggableImageView
 import com.draggable.library.extension.entities.DraggableImageInfo
 import com.draggable.library.extension.glide.GlideHelper
-import com.drawable.library.R
-import kotlinx.android.synthetic.main.view_image_viewr.view.*
 
 /**
  * Created by susion on 2019/08/15
@@ -26,9 +26,18 @@ class DraggableImageGalleryViewer(context: Context) : FrameLayout(context) {
     private val mImageList = ArrayList<DraggableImageInfo>()
     private var showWithAnimator: Boolean = true
 
+    private var mImageGalleryViewOriginDownloadImg: ImageView
+    private var mImageViewerViewPage: HackyViewPager
+    private var mImageViewerTvIndicator: TextView
+
     init {
-        LayoutInflater.from(context).inflate(R.layout.view_image_viewr, this)
+        val root = LayoutInflater.from(context).inflate(R.layout.view_image_viewr, this)
         layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+
+        mImageGalleryViewOriginDownloadImg = root.findViewById(R.id.mImageGalleryViewOriginDownloadImg)
+        mImageViewerViewPage = root.findViewById(R.id.mImageViewerViewPage)
+        mImageViewerTvIndicator = root.findViewById(R.id.mImageViewerTvIndicator)
+
         background = ColorDrawable(Color.TRANSPARENT)
         initAdapter()
         mImageGalleryViewOriginDownloadImg.setOnClickListener {
